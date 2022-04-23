@@ -1,0 +1,21 @@
+{
+    "name": "STOP_3",
+    "symbol": "STPWR",
+    "description": "Collection of 3 images on the blockchain for testing/learning purposes. This is the number 3/3.",
+    "image": "2.png",
+    "properties": {
+      "files": [
+        {
+          "uri": "2.png",
+          "type": "image/png"
+        }
+      ],
+      "creators": [
+        {
+          "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
+          "share": 100
+        }
+      ]
+    },
+    "collection": {"name": "stopwar", "family": "stopwar"}
+  }
