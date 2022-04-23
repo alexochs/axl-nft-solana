@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import twitterLogo from './assets/twitter-logo.svg';
 import CandyMachine from './CandyMachine';
 
 // Constants
-const TWITTER_HANDLE = 'alexochs_';
-const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 const WEBSITE_LINK = "https://alexochs.de";
-const PHOTO_LINK = "https://alexochs.de/img/me.jpeg";
 
 const App = () => {
   // State
@@ -50,12 +46,15 @@ const App = () => {
     }
   };
   const renderNotConnectedContainer = () => (
-    <button
-      className="cta-button connect-wallet-button"
-      onClick={connectWallet}
-    >
-      Connect to Wallet
-    </button>
+    <div>
+      <p className="sub-text">Mint your NFT now!</p>
+      <button
+        className="cta-button connect-wallet-button"
+        onClick={connectWallet}
+      >
+        Connect to Solana
+      </button>
+    </div>
   );
 
   useEffect(() => {
@@ -70,21 +69,19 @@ const App = () => {
     <div className="App">
       <div className="container">
         <div className="header-container">
-          <p className="header">✨ THE 353 NFT COLLECTION ✨</p>
-          <p className="sub-text">Mint your NFT now!</p>
+          <p className="header">✨ THE 353 COLLECTION ✨</p>
           {/* Add the condition to show this only if we don't have a wallet address */}
           {!walletAddress && renderNotConnectedContainer()}
         </div>
         {/* Check for walletAddress and then pass in walletAddress */}
         {walletAddress && <CandyMachine walletAddress={window.solana} />}
         <div className="footer-container">
-          {/*<img alt="Twitter Logo" className="twitter-logo"  src={PHOTO_LINK} />*/}
           <a
             className="footer-text"
             href={WEBSITE_LINK}
             target="_blank"
             rel="noreferrer"
-          >{`Built by Alex Ochs`}</a>
+          >{`Made by Alex Ochs`}</a>
         </div>
       </div>
     </div>

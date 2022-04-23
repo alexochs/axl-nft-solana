@@ -1,7 +1,7 @@
 {
-    "name": "STOP_1",
-    "symbol": "STPWR",
-    "description": "Collection of 3 images on the blockchain for testing/learning purposes. This is the number 1/3.",
+    "name": "Malte",
+    "symbol": "Malte",
+    "description": "Malte da Boss. Part of the 353 Collection.",
     "image": "0.png",
     "properties": {
       "files": [
@@ -17,5 +17,5 @@
         }
       ]
     },
-    "collection": {"name": "stopwar", "family": "stopwar"}
+    "collection": {"name": "353", "family": "353"}
   }

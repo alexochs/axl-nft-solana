@@ -1,0 +1,21 @@
+{
+    "name": "Tobi Drawing",
+    "symbol": "TD",
+    "description": "An illustration signed by KK. Part of the 353 Collection.",
+    "image": "5.png",
+    "properties": {
+      "files": [
+        {
+          "uri": "5.png",
+          "type": "image/png"
+        }
+      ],
+      "creators": [
+        {
+          "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
+          "share": 100
+        }
+      ]
+    },
+    "collection": {"name": "353", "family": "353"}
+  }
