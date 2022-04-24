@@ -11,6 +11,9 @@ const App = () => {
   // State
   const [walletAddress, setWalletAddress] = useState(null);
   const [firebaseApp, setFirebaseApp] = useState(null);
+  //let heartId = 0;
+  //const [heartId, setHeartId] = useState(0);
+  //const [heart, setHeart] = useState("💜💙🧡💛💚")
 
   useEffect(() => {
     const firebaseConfig = {
@@ -100,7 +103,7 @@ const App = () => {
             href={WEBSITE_LINK}
             target="_blank"
             rel="noreferrer"
-          >{`Made by Alex Ochs`}</a>
+          >{`Made with 💜 by Alex Ochs`}</a>
         </div>
       </div>
     </div>

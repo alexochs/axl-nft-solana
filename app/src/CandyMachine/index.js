@@ -33,13 +33,13 @@ const opts = {
 
 const CandyMachine = ({ walletAddress, firebaseApp}) => {
   const [candyMachine, setCandyMachine] = useState(null);
-  const [mintAddresses, setMintAddresses] = useState(null);
+  const [mints, setMints] = useState([]);
   const [mintExists, setMintExists] = useState(false);
   const db = getFirestore(firebaseApp);
 
   useEffect( () => {
     getCandyMachineState().then(() => {
-      getMintAddressesFromDB();
+      getMintsFromDB();
     });
   }, []);
 
@@ -438,41 +438,52 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
     const mintAddresses = metadataAccounts.map((metadataAccountInfo) => (
       bs58.encode(metadataAccountInfo.account.data)
     ));
-    console.log(mintAddresses);
 
-    const mintsDb = await getMintAddressesFromDB();
-    console.log(mintsDb);
-    console.log(mintsDb.map((mint) => mint.publicKey));
+    const mintAddressesDb = (await getMintsFromDB()).map((mint) => mint.mint);
+    //const mintAddressesDb = mints.map((mint) => mint.mint);
+    console.log("vvv mintAddressesDb vvv");
+    console.log(mintAddressesDb);
+
     mintAddresses.forEach(async (mintAddress) => {
-      try {
-        if (!mintsDb.includes(mintAddress)) {
-          await addDoc(collection(db, "mintPublicKeys"), {
-            publicKey: mintAddress,
-          });
-          console.log("Successfully added NFT address to database!");
-        }
-      } catch (e) {
-        console.error("Error adding NFT address to database: ", e);
+      if (!mintAddressesDb.includes(mintAddress)) {
+        await addMintToDb(mintAddress);
       }
     })
-    
-    setMintAddresses(mintAddresses);
   };
 
-  const getMintAddressesFromDB = async () => {
-    let mintPublicKeys = [];
-    const querySnapshot = await getDocs(collection(db, "mintPublicKeys"));
+  const getMintsFromDB = async () => {
+    let mints = [];
+    const querySnapshot = await getDocs(collection(db, "mints"));
     querySnapshot.forEach((doc) => {
-      mintPublicKeys.push(doc.data().publicKey);
+      mints.push(doc.data());
     });
-    setMintAddresses(mintPublicKeys);
-    return mintPublicKeys;
+    setMints(mints);
+    return mints;
   };
 
   const fuckthatshit = async () => {
     console.log("Fetching minted NFTs...");
     const candyMachineCreator = await getCandyMachineCreator("kFUvqqfdfs1fc1kUGP2exWQzWbzsBky3BWcPa5raRfi");
     await getMintAddresses(candyMachineCreator[0]);
+  };
+
+  const getMintMetadata = async (mintAddress) => {
+    const response = await fetch("https://api.blockchainapi.com/v1/solana/nft/devnet/" + mintAddress, {
+      headers: {
+        APIKeyID: process.env.REACT_APP_BLOCKCHAIN_API_KEY,
+        APISecretKey: process.env.REACT_APP_BLOCKCHAIN_API_SECRET
+      }
+    });
+
+    const metadata = await response.json();
+    console.log(metadata);
+    return metadata;
+  };
+
+  const addMintToDb = async (mintAddress) => {
+    const metadata = await getMintMetadata(mintAddress);
+    await addDoc(collection(db, "mints"), metadata);
+    await getMintsFromDB();
   };
 
   // Create render function
@@ -496,13 +507,22 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
     if (!mintExists) {
       return <p>No NFT has yet been minted, be the <b>first</b> one! 🏁</p>
     }
-    else if (!mintAddresses) {
+    else if (mints.length === 0) {
       return <p>Loading...</p>
     }
     else {
      return (
-        <div>
-          {mintAddresses.map((address) => (<p>{address}</p>))}
+        <div className="minted-list-container">
+          {mints.map((mint) => (
+            <div className="nft-container">
+              <img className="nft-image" src={mint.off_chain_data.image}></img>
+              <div className="nft-info">
+                <p className="nft-name">{mint.off_chain_data.name}</p>
+                <p>{mint.off_chain_data.description}</p>
+                <a className="nft-link" href={mint.explorer_url} target="_blank">View on Solana Explorer</a>
+              </div>
+            </div>
+          ))}
         </div>
       );
     }
@@ -512,7 +532,7 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
     // Only show this if machineStats is available
     candyMachine && (
       <div>
-        {candyMachine.state.itemsRedeemed === candyMachine.state.itemsAvailable ? (
+        {candyMachine.state.itemsRedeemed  === candyMachine.state.itemsAvailable ? (
           <p className="sub-text">Too late, nothing's left! 😧</p>
         ) : (
           <div>
@@ -526,7 +546,7 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
               </button>
             </div>
             <div>
-              <p className="sub-text">Already minted:</p>
+              <p className="sub-text">Already minted NFTs:</p>
               {renderMintedItems()}
             </div>
           </div>

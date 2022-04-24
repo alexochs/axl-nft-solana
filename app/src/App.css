@@ -1,5 +1,6 @@
 .App {
-  height: 100vh;
+  height: auto;
+  min-height: 100vh;
   background-color: rgb(20, 20, 20);
   overflow: scroll;
   text-align: center;
@@ -14,6 +15,7 @@
   padding: 0 24rem 0 24rem;
   color: white;
   position: relative;
+  margin-top: 2rem;
   /* background-color: #35aee2; */
 }
 
@@ -72,7 +74,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
+  /*position: absolute;*/
   width: 100%;
   bottom: 0;
   left: 0;
@@ -117,6 +119,39 @@
   background: -webkit-linear-gradient(-45deg, #35aee2, #4e44ce);
   background-size: 200% 200%;
   animation: gradient-animation 15s ease infinite;
+}
+
+.minted-list-container {
+  margin-bottom: 2rem;
+}
+
+.nft-container {
+  height: 12rem;
+  display: flex;
+  flex-direction: row;
+  margin: 1rem;
+}
+
+.nft-image {
+  width: auto;
+  height: auto;
+  margin-right: 1rem;
+}
+
+.nft-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: flex-start;
+}
+
+.nft-name {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.nft-link {
+  color: white;
 }
 
 /* KeyFrames */
