@@ -1,7 +1,7 @@
 {
     "name": "Malte",
-    "symbol": "Malte",
-    "description": "Malte da Boss. Part of the 353 Collection.",
+    "symbol": "353",
+    "description": "Malte Da Boss. Part of the 353 Collection.",
     "image": "0.png",
     "properties": {
       "files": [
@@ -13,7 +13,7 @@
       "creators": [
         {
           "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
-          "share": 100
+          "share": 10
         }
       ]
     },

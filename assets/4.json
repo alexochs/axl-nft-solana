@@ -1,6 +1,6 @@
 {
     "name": "The Last Bubble",
-    "symbol": "TLB",
+    "symbol": "353",
     "description": "May he not be popped. Part of the 353 Collection.",
     "image": "4.png",
     "properties": {
@@ -13,7 +13,7 @@
       "creators": [
         {
           "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
-          "share": 100
+          "share": 10
         }
       ]
     },

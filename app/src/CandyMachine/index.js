@@ -13,18 +13,34 @@ import {
   getNetworkToken,
   CIVIC
 } from './helpers';
+import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes';
 import CountdownTimer from '../CountdownTimer';
+import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
+
+const MAX_NAME_LENGTH = 32;
+const MAX_URI_LENGTH = 200;
+const MAX_SYMBOL_LENGTH = 10;
+const MAX_CREATOR_LEN = 32 + 1 + 1;
+const MAX_CREATOR_LIMIT = 5;
+const MAX_DATA_SIZE = 4 + MAX_NAME_LENGTH + 4 + MAX_SYMBOL_LENGTH + 4 + MAX_URI_LENGTH + 2 + 1 + 4 + MAX_CREATOR_LIMIT * MAX_CREATOR_LEN;
+const MAX_METADATA_LEN = 1 + 32 + 32 + MAX_DATA_SIZE + 1 + 1 + 9 + 172;
+const CREATOR_ARRAY_START = 1 + 32 + 32 + 4 + MAX_NAME_LENGTH + 4 + MAX_URI_LENGTH + 4 + MAX_SYMBOL_LENGTH + 2 + 1 + 4;
 
 const { SystemProgram } = web3;
 const opts = {
   preflightCommitment: 'processed',
 };
 
-const CandyMachine = ({ walletAddress }) => {
+const CandyMachine = ({ walletAddress, firebaseApp}) => {
   const [candyMachine, setCandyMachine] = useState(null);
+  const [mintAddresses, setMintAddresses] = useState(null);
+  const [mintExists, setMintExists] = useState(false);
+  const db = getFirestore(firebaseApp);
 
-  useEffect(() => {
-    getCandyMachineState();
+  useEffect( () => {
+    getCandyMachineState().then(() => {
+      getMintAddressesFromDB();
+    });
   }, []);
 
   const getProvider = () => {
@@ -56,7 +72,8 @@ const CandyMachine = ({ walletAddress }) => {
     const candyMachine = await program.account.candyMachine.fetch(
       process.env.REACT_APP_CANDY_MACHINE_ID
     );
-    
+    console.log(candyMachine);
+  
     // Parse out all our metadata and log it out
     const itemsAvailable = candyMachine.data.itemsAvailable.toNumber();
     const itemsRedeemed = candyMachine.itemsRedeemed.toNumber();
@@ -102,6 +119,11 @@ const CandyMachine = ({ walletAddress }) => {
         price: candyMachine.data.price,
       },
     });
+
+    if (itemsRedeemed > 0) {
+      setMintExists(true);
+      fuckthatshit();
+    }
   };
 
   const getCandyMachineCreator = async (candyMachine) => {
@@ -366,18 +388,91 @@ const CandyMachine = ({ walletAddress }) => {
     );
   
     try {
-      return (
-        await sendTransactions(
+      const transactionId = await sendTransactions(
           candyMachine.program.provider.connection,
           candyMachine.program.provider.wallet,
           [instructions, cleanupInstructions],
           [signers, []],
-        )
-      ).txs.map(t => t.txid);
+        ).txs.map(t => t.txid);
+      
+      if (transactionId) {
+        try {
+          await addDoc(collection(db, "mintPublicKeys"), {
+            publicKey: mint.publicKey,
+          });
+          console.log("Successfully added NFT address to database!");
+        } catch (e) {
+          console.error("Error adding NFT address to database: ", e);
+        }
+      }
+
+      return transactionId;
     } catch (e) {
       console.log(e);
     }
     return [];
+  };
+
+  const getMintAddresses = async (firstCreatorAddress) => {
+    const metadataAccounts = await getProvider().connection.getProgramAccounts(
+      TOKEN_METADATA_PROGRAM_ID,
+      {
+        // The mint address is located at byte 33 and lasts for 32 bytes.
+        dataSlice: { offset: 33, length: 32 },
+  
+        filters: [
+          // Only get Metadata accounts.
+          { dataSize: MAX_METADATA_LEN },
+
+          // Filter using the first creator.
+          {
+            memcmp: {
+              offset: CREATOR_ARRAY_START,
+              bytes: firstCreatorAddress.toBase58(), //getCandyMachineCreator("kFUvqqfdfs1fc1kUGP2exWQzWbzsBky3BWcPa5raRfi")[0].toBase58(),
+            },
+          },
+        ],
+      },
+    );
+  
+    const mintAddresses = metadataAccounts.map((metadataAccountInfo) => (
+      bs58.encode(metadataAccountInfo.account.data)
+    ));
+    console.log(mintAddresses);
+
+    const mintsDb = await getMintAddressesFromDB();
+    console.log(mintsDb);
+    console.log(mintsDb.map((mint) => mint.publicKey));
+    mintAddresses.forEach(async (mintAddress) => {
+      try {
+        if (!mintsDb.includes(mintAddress)) {
+          await addDoc(collection(db, "mintPublicKeys"), {
+            publicKey: mintAddress,
+          });
+          console.log("Successfully added NFT address to database!");
+        }
+      } catch (e) {
+        console.error("Error adding NFT address to database: ", e);
+      }
+    })
+    
+    setMintAddresses(mintAddresses);
+  };
+
+  const getMintAddressesFromDB = async () => {
+    let mintPublicKeys = [];
+    const querySnapshot = await getDocs(collection(db, "mintPublicKeys"));
+    querySnapshot.forEach((doc) => {
+      mintPublicKeys.push(doc.data().publicKey);
+    });
+    setMintAddresses(mintPublicKeys);
+    return mintPublicKeys;
+  };
+
+  const fuckthatshit = async () => {
+    console.log("Fetching minted NFTs...");
+    const candyMachineCreator = await getCandyMachineCreator("kFUvqqfdfs1fc1kUGP2exWQzWbzsBky3BWcPa5raRfi");
+    await getMintAddresses(candyMachineCreator[0]);
   };
 
   // Create render function
@@ -397,22 +492,44 @@ const CandyMachine = ({ walletAddress }) => {
     return <p>{`Drop Date: ${candyMachine.state.goLiveDateTimeString}`}</p>;
   };
 
+  const renderMintedItems = () => {
+    if (!mintExists) {
+      return <p>No NFT has yet been minted, be the <b>first</b> one! 🏁</p>
+    }
+    else if (!mintAddresses) {
+      return <p>Loading...</p>
+    }
+    else {
+     return (
+        <div>
+          {mintAddresses.map((address) => (<p>{address}</p>))}
+        </div>
+      );
+    }
+  }
+
   return (
     // Only show this if machineStats is available
     candyMachine && (
-      <div className="machine-container">
-        {renderDropTimer()}
-        <p>{`Drop Date: ${candyMachine.state.goLiveDateTimeString}`}</p>
-        <p>{`Items Minted: ${candyMachine.state.itemsRedeemed} / ${candyMachine.state.itemsAvailable}`}</p>
+      <div>
         {candyMachine.state.itemsRedeemed === candyMachine.state.itemsAvailable ? (
-          <p className="sub-text">Sold Out 🙊</p>
+          <p className="sub-text">Too late, nothing's left! 😧</p>
         ) : (
-          <button
-            className="cta-button mint-button"
-            onClick={mintToken}
-          >
-            Mint NFT
-          </button>
+          <div>
+            <div style={{marginBottom: "8rem"}}>
+              <p className="sub-text">You're lucky, there are <b>{candyMachine.state.itemsRemaining} NFTs</b> still available!</p>
+              <button
+                className="cta-button gradient-button"
+                onClick={mintToken}
+              >
+                Claim your NFT
+              </button>
+            </div>
+            <div>
+              <p className="sub-text">Already minted:</p>
+              {renderMintedItems()}
+            </div>
+          </div>
         )}
         {/*mints.length > 0 && renderMintedItems()*/}
         {/*isLoadingMints && <p>LOADING MINTS...</p>*/}

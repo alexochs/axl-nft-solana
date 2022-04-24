@@ -1,6 +1,6 @@
 {
     "name": "Axl",
-    "symbol": "Axl",
+    "symbol": "353",
     "description": "The One and Only Axl. Part of the 353 Collection.",
     "image": "1.png",
     "properties": {
@@ -13,7 +13,7 @@
       "creators": [
         {
           "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
-          "share": 100
+          "share": 10
         }
       ]
     },
