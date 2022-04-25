@@ -1,7 +1,7 @@
 {
     "name": "The Last Bubble",
     "symbol": "353",
-    "description": "May he not be popped. Part of the 353 Collection.",
+    "description": "May he never pop.",
     "image": "4.png",
     "properties": {
       "files": [
@@ -13,7 +13,7 @@
       "creators": [
         {
           "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
-          "share": 10
+          "share": 100
         }
       ]
     },

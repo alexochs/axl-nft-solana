@@ -1,7 +1,7 @@
 {
     "name": "Antonia & Cassy",
     "symbol": "353",
-    "description": "Two sparkling flowers. Part of the 353 Collection.",
+    "description": "Two sparkling flowers.",
     "image": "7.png",
     "properties": {
       "files": [
@@ -13,7 +13,7 @@
       "creators": [
         {
           "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
-          "share": 10
+          "share": 100
         }
       ]
     },

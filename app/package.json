@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@metaplex-foundation/mpl-token-metadata": "^2.1.0",
+    "@metaplex-foundation/mpl-token-metadata": "^1.2.5",
     "@metaplex/js": "^4.7.0",
     "@project-serum/anchor": "^0.18.2",
     "@solana/wallet-adapter-base": "^0.9.1",

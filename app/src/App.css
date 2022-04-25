@@ -12,10 +12,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 24rem 0 24rem;
   color: white;
   position: relative;
-  margin-top: 2rem;
   /* background-color: #35aee2; */
 }
 
@@ -27,12 +25,13 @@
 }
 
 .header-container {
-  margin-bottom: 2rem;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
 }
 
 .header {
   margin: 0;
-  font-size: 50px;
+  font-size: 4rem;
   font-weight: bold;
   background: -webkit-linear-gradient(left, white, black);
   -webkit-background-clip: text;
@@ -40,8 +39,32 @@
   animation: gradient-animation 4s ease infinite;
 }
 
+.body-container {
+    padding: 0 24rem 0 24rem;
+}
+
+.candymachine-container {
+  
+}
+
+.minter-container {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+
+.othermints-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+
 .sub-text {
-  font-size: 25px;
+  font-size: 2rem;
+}
+
+.subsub-text {
+  font-size: 1.5rem;
 }
 
 .gradient-text {
@@ -52,14 +75,14 @@
 }
 
 .cta-button {
-  height: 45px;
+  height: 4rem;
   border: 0;
   width: auto;
-  padding-left: 40px;
-  padding-right: 40px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
   border-radius: 1rem;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1.25rem;
   font-weight: bold;
 }
 
@@ -73,16 +96,13 @@
 .footer-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  /*position: absolute;*/
   width: 100%;
-  bottom: 0;
-  left: 0;
-  padding-bottom: 32px;
+  padding-bottom: 2rem;
+  position: static;
 }
 
 .footer-text {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: bold;
   color: white;
 }
@@ -116,42 +136,64 @@
 
 .gradient-button {
   color: white;
-  background: -webkit-linear-gradient(-45deg, #35aee2, #4e44ce);
-  background-size: 200% 200%;
-  animation: gradient-animation 15s ease infinite;
+  background: -webkit-linear-gradient(-45deg, #aa0000, #00aa00, #0000aa);
+  background-size: 500%;
+  animation: gradient-animation 20s ease infinite;
 }
 
 .minted-list-container {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 2rem;
 }
 
 .nft-container {
-  height: 12rem;
+  width: 24rem;
+  max-width: 24rem;
+  height: auto;
   display: flex;
-  flex-direction: row;
-  margin: 1rem;
+  flex-direction: column;
+  margin: auto;
+  border: .25rem solid white;
+  box-shadow: .5rem .5rem white;
 }
 
 .nft-image {
   width: auto;
+  max-width: 24rem;
   height: auto;
-  margin-right: 1rem;
+  max-height: 24rem;
+  border-bottom: .25rem solid white;
 }
 
 .nft-info {
   display: flex;
   flex-direction: column;
-  justify-content: start;
   align-items: flex-start;
+  text-align: start;
+  padding: 2rem;
 }
 
 .nft-name {
   font-weight: bold;
+  font-size: 2rem;
+}
+
+.nft-description {
   font-size: 1.25rem;
 }
 
 .nft-link {
+  font-size: 1rem;
   color: white;
+  margin-top: 2rem;
+}
+
+.mint-list-item {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 /* KeyFrames */

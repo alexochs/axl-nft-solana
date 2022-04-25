@@ -1,7 +1,7 @@
 {
     "name": "Pink PS2",
     "symbol": "353",
-    "description": "A magnificent PlayStation 2 rocking a pink finish. Part of the 353 Collection.",
+    "description": "A magnificent PlayStation 2 rocking a pink finish.",
     "image": "6.png",
     "properties": {
       "files": [
@@ -13,7 +13,7 @@
       "creators": [
         {
           "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
-          "share": 10
+          "share": 100
         }
       ]
     },

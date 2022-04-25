@@ -1,12 +1,12 @@
 {
-    "name": "Tobi Drawing",
+    "name": "Test NFT 2",
     "symbol": "353",
-    "description": "An illustration signed by KK.",
-    "image": "5.png",
+    "description": "Testing 456...",
+    "image": "9.png",
     "properties": {
       "files": [
         {
-          "uri": "5.png",
+          "uri": "9.png",
           "type": "image/png"
         }
       ],

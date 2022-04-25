@@ -1,7 +1,7 @@
 {
     "name": "Erik & Hannah",
     "symbol": "353",
-    "description": "Forever in Love. Part of the 353 Collection.",
+    "description": "Forever in Love.",
     "image": "3.png",
     "properties": {
       "files": [
@@ -13,7 +13,7 @@
       "creators": [
         {
           "address": "G8tDpmWBsaGyHPi6gTK8u27FsbkaZTwEDF8RzS6mHfVY",
-          "share": 10
+          "share": 100
         }
       ]
     },
