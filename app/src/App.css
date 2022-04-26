@@ -26,7 +26,7 @@
 
 .header-container {
   margin-top: 4rem;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
 
 .header {
@@ -156,6 +156,12 @@
   margin: auto;
   border: .25rem solid white;
   box-shadow: .5rem .5rem white;
+  background-color: rgb(35, 35, 35);
+  transition: .3s ease;
+}
+.nft-container:hover {
+  transform: scale(1.033);
+  transition: .3s ease;
 }
 
 .nft-image {
@@ -172,6 +178,7 @@
   align-items: flex-start;
   text-align: start;
   padding: 2rem;
+  margin-top: -2rem;
 }
 
 .nft-name {

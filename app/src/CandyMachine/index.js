@@ -432,7 +432,7 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
     return [];
   };
 
-  const getMintAddresses = async (firstCreatorAddress) => {
+  const getMintAddressesFromBlockchain = async (firstCreatorAddress) => {
     const metadataAccounts = await getProvider().connection.getProgramAccounts(
       TOKEN_METADATA_PROGRAM_ID,
       {
@@ -454,20 +454,9 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
       },
     );
   
-    const mintAddresses = metadataAccounts.map((metadataAccountInfo) => (
+    return metadataAccounts.map((metadataAccountInfo) => (
       bs58.encode(metadataAccountInfo.account.data)
     ));
-
-    const mintAddressesDb = (await getMintsFromDB()).map((mint) => mint.mint);
-    //const mintAddressesDb = mints.map((mint) => mint.mint);
-    console.log("vvv mintAddressesDb vvv");
-    console.log(mintAddressesDb);
-
-    mintAddresses.forEach(async (mintAddress) => {
-      if (!mintAddressesDb.includes(mintAddress)) {
-        await addMintToDb(mintAddress, 0);
-      }
-    })
   };
 
   const getMintsFromDB = async () => {
@@ -480,10 +469,36 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
     return mints;
   };
 
-  const fuckthatshit = async () => {
-    console.log("Fetching minted NFTs...");
+  const getMintsFromBlockchain = async (mints) => {
+    console.log("Fetching minted addresses from blockchain...");
     const candyMachineCreator = await getCandyMachineCreator(process.env.REACT_APP_CANDY_MACHINE_ID);
-    await getMintAddresses(candyMachineCreator[0]);
+    const blockchainMints = await getMintAddressesFromBlockchain(candyMachineCreator[0]);
+    console.log("✅ Fetched mints from blockchain.");
+    console.log(blockchainMints);
+
+    let missing = [];
+    console.log(mints);
+    blockchainMints.forEach((bcMint) => {
+      if (!mints.map(mint => mint.mint).includes(bcMint)) missing.push(bcMint);
+    });
+    console.log("Filtered missing mints:");
+    console.log(missing);
+    
+    if (missing.length > 0) {
+      console.log("❕ Found " + missing.length + " missing mints. Updating...");
+      missing.forEach(async (missingMint) => {
+        console.log("❕ Adding mint to database (Mint: " + missingMint + ")");
+        await addMint(missingMint, 0);
+        console.log("✅ Added mint to database: " + missingMint);
+
+        console.log("❕ Updating metadata via API (Mint: " + missingMint + ")");
+        await addMetadata(missingMint);
+        console.log("✅ Updated metadata of mint: " + missingMint);
+      });
+    }
+    else {
+      console.log("✅ Database is up-to-date with blockchain.");
+    }
   };
 
   const getMintMetadata = async (mintAddress) => {
@@ -571,9 +586,12 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
   const getData = async () => {
     const mints = await getMints();
     let metadatas = await getMetadatas();
+
     console.log("missing off chain data");
     const missing = metadatas.filter(metadata => !metadata.off_chain_data.image).map(metadata => metadata.mint);
     console.log(missing);
+
+
     mints.map((mint) => mint.mint).forEach(async (mintAddress) => {
       if (!metadatas.map((metadata) => metadata.mint).includes(mintAddress) || missing.includes(mintAddress)) {
         console.log("❕ Found missing metadata for mint: " + mintAddress);
@@ -586,6 +604,7 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
     });
 
     checkIsOwner(mints, metadatas);
+    getMintsFromBlockchain(mints);
   }
 
   const addMintToDb = async (mintAddress, minterAddress) => {
@@ -614,21 +633,25 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
     await getMintsFromDB();
   };
 
-  const getUserNFTs = async () => {
+  const getUserNFTs = async (metadatas) => {
+    let ownedMint = null;
     const nftsmetadata = await Metadata.findDataByOwner(getProvider().connection, getProvider().wallet.publicKey);
-    nftsmetadata.forEach(async (metadata) => {
+    nftsmetadata.forEach((metadata) => {
       if (metadata.data.symbol === "353") {
-        console.log("User owns NFT of 353 Collection!");
-        const offChainMetadata = await getMintMetadata(metadata.mint);
-        console.log("v off chain dataa v");
-        console.log(offChainMetadata);
-        setOwnedMetadata(offChainMetadata);
-        setIsOwner(true);
+        ownedMint = metadata.mint;
       }
     });
+
+    metadatas.forEach((metadata) => {
+      if (metadata.mint === ownedMint) {
+        setOwnedMetadata(metadata);
+        setIsOwner(true);
+        return;
+      }
+    })
   };
 
-  const checkIsOwner = (mints, metadatas) => {
+  const checkIsOwner = async (mints, metadatas) => {
     const user = getProvider().wallet.publicKey.toString();
     console.log("User: " + user);
     const mint = mints.filter(mint => mint.minter === user).map(mint => mint.mint)
@@ -644,6 +667,9 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
         console.log("ERROR WITH METADATA (OWNER CHECK)");
       }
     }
+    else {
+      getUserNFTs(metadatas);
+    }
   }
 
   const renderMinter = () => {
@@ -658,7 +684,12 @@ const CandyMachine = ({ walletAddress, firebaseApp}) => {
       );
     }
     else if (candyMachine.state.itemsRedeemed  >= candyMachine.state.itemsAvailable) {
-      return <p className="sub-text"><b>Too late, nothing's left! 😧</b></p>
+      return (
+        <div>
+          <p className="sub-text"><b>Too late, nothing's left! 😧</b></p>
+          <p className="sub-text">👀👇</p>
+        </div>
+      );
     }
     else {
       return (
